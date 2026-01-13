@@ -10,7 +10,7 @@ interface PinLockScreenProps {
 }
 
 export const PinLockScreen = ({ onVerify, isVerifying, error, onClearError }: PinLockScreenProps) => {
-  const [pin, setPin] = useState<string[]>(['', '', '', '']);
+  const [pin, setPin] = useState<string[]>(['', '', '', '', '', '']);
   const [shake, setShake] = useState(false);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
@@ -39,12 +39,12 @@ export const PinLockScreen = ({ onVerify, isVerifying, error, onClearError }: Pi
     setPin(newPin);
 
     // Auto-focus next input
-    if (value && index < 3) {
+    if (value && index < 5) {
       inputRefs.current[index + 1]?.focus();
     }
 
     // Auto-submit when all digits entered
-    if (value && index === 3) {
+    if (value && index === 5) {
       const fullPin = newPin.join('');
       handleSubmit(fullPin);
     }
@@ -66,19 +66,19 @@ export const PinLockScreen = ({ onVerify, isVerifying, error, onClearError }: Pi
     const success = await onVerify(fullPin);
     if (!success) {
       // Clear PIN on failure
-      setPin(['', '', '', '']);
+      setPin(['', '', '', '', '', '']);
       inputRefs.current[0]?.focus();
     }
   };
 
   const handlePaste = (e: React.ClipboardEvent) => {
     e.preventDefault();
-    const pastedData = e.clipboardData.getData('text').slice(0, 4);
+    const pastedData = e.clipboardData.getData('text').slice(0, 6);
     if (/^\d+$/.test(pastedData)) {
-      const newPin = pastedData.split('').slice(0, 4);
-      while (newPin.length < 4) newPin.push('');
+      const newPin = pastedData.split('').slice(0, 6);
+      while (newPin.length < 6) newPin.push('');
       setPin(newPin);
-      if (newPin.length === 4 && newPin.every(d => d)) {
+      if (newPin.length === 6 && newPin.every(d => d)) {
         handleSubmit(newPin.join(''));
       }
     }
@@ -132,7 +132,7 @@ export const PinLockScreen = ({ onVerify, isVerifying, error, onClearError }: Pi
                 onChange={(e) => handleInputChange(index, e.target.value)}
                 onKeyDown={(e) => handleKeyDown(index, e)}
                 disabled={isVerifying}
-                className="w-14 h-16 text-center text-2xl font-mono bg-bank-navy border-2 border-bank-gold/30 
+                className="w-12 h-14 text-center text-xl font-mono bg-bank-navy border-2 border-bank-gold/30 
                   rounded-lg text-bank-cream focus:border-bank-gold focus:outline-none focus:ring-2 
                   focus:ring-bank-gold/20 transition-all disabled:opacity-50"
                 aria-label={`PIN digit ${index + 1}`}
@@ -156,7 +156,7 @@ export const PinLockScreen = ({ onVerify, isVerifying, error, onClearError }: Pi
 
           {/* Hint */}
           <p className="text-center text-bank-cream/40 text-xs mt-4">
-            Enter your 4-digit security PIN to access your account
+            Enter your 6-digit security PIN to access your account
           </p>
         </div>
 
